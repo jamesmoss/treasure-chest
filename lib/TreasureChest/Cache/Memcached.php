@@ -2,78 +2,25 @@
 
 namespace TreasureChest\Cache;
 
-
-class Filesystem implements \TreasureChest\CacheInterface
+class Memcached implements \TreasureChest\CacheInterface
 {
-
-	protected $path;
+	protected $memcached;
 	
-	/**
-	 * __constructor
-	 * 
-	 * @access public
-	 * @param string $dir Path to a writeable folder in which store the cache (default: '/tmp')
-	 * @return void
-	 */
-	public function __construct($dir = '/tmp')
+	public function __construct($host, $port = 11211, $weight = 0)
 	{
-		// Doesnt matter if the path has a trailing slash or not, we remove it.
-		$this->path = rtrim($dir, '/').'/';
+		$this->memcached = new \Memcached;
 		
-		if(!is_writable($this->path)) {
-			throw new \TreasureChest\Exception\Cache('Cache directory is not writable');
+		if(!is_array($host)) {
+			$host = array($host, $port, $weight);
+		}
+		
+		foreach($host as $details) {
+			$this->memcached->addServer($details[0], $details[1], $details[2]);
 		}
 	}
 	
-	/**
-	 * Returns the full path to the file for the provided key 
-	 * 
-	 * @access protected
-	 * @param string $key The key identifier
-	 * @return string The full path to the cache file
-	 */
-	protected function getPath($key)
-	{
-		return $this->path.sha1($key);
-	}
-	
-	/**
-	 * Atomically adjusts (increment or decrements) an integer stored in a file.
-	 * 
-	 * @access protected
-	 * @param string $file
-	 * @param integer $step
-	 * @param boolean &$success
-	 * @return mixed The new adjusted value on success, FALSE on failure.
-	 */
-	protected function atomicAdjust($file, $step, &$success)
-	{
-		$success = false;
-		
-		$fp = fopen($file, "r+");
-
-		if (!flock($fp, LOCK_EX)) {
-			return false;
-		} else {
-		    $value = trim(fread($fp, 1000));
-		    if($value === '') {
-		    	$value = 0;
-		    }
-		    
-		    $value = filter_var($value, FILTER_VALIDATE_INT);
-		    
-		    if($value !== false) {
-		    	$value += $step;
-		    	 
-		    	ftruncate($fp, 0);
-		    	fwrite($fp, $value);
-		    }
-		    
-		    flock($fp, LOCK_UN); // release the lock
-		    fclose($fp);
-		    
-		    return $value;
-		}
+	public function getMemcached() {
+		return $this->memcached;
 	}
 	
 	/**
@@ -87,11 +34,7 @@ class Filesystem implements \TreasureChest\CacheInterface
 	 */
 	public function add($key, $var = null, $ttl = 0)
 	{
-		if(file_exists($this->getPath($key))) {
-			return false;
-		}
-		
-		return $this->store($key, $var, $ttl);
+		return $this->memcached->add($key, $var, $ttl);
 	}
 	
 	/**
@@ -105,14 +48,7 @@ class Filesystem implements \TreasureChest\CacheInterface
 	 */
 	public function store($key, $var = null, $ttl = 0)
 	{
-		$file = $this->getPath($key);
-		$write = file_put_contents($file, $var);
-		
-		if(!$write) {
-			return false;
-		}
-		
-		return touch($file, time() + $ttl);
+		return $this->memcached->set($key, $var, $ttl);
 	}
 	
 	/**
@@ -126,11 +62,7 @@ class Filesystem implements \TreasureChest\CacheInterface
 	 */
 	public function replace($key, $var = null, $ttl = 0)
 	{
-		if(!$this->exists($key)) {
-			return false;
-		}
-		
-		return $this->store($key, $var, $ttl);
+		return $this->memcached->replace($key, $var, $ttl);
 	}
 	
 	/**
@@ -142,7 +74,10 @@ class Filesystem implements \TreasureChest\CacheInterface
 	 */
 	public function exists($key)
 	{
-		return file_exists($this->getPath($key));
+		$success = false;
+		$this->fetch($key, $success);
+		
+		return $success;
 	}
 	
 	
@@ -156,14 +91,10 @@ class Filesystem implements \TreasureChest\CacheInterface
 	 */
 	public function fetch($key, &$success = false)
 	{
-		$file = $this->getPath($key);
+		$result = $this->memcached->get($key);
+		$success = ($result !== false);
 		
-		if(!file_exists($file) || filemtime($file) < time()) {
-			$success = false;
-			return false;
-		}
-		
-		return file_get_contents($file);
+		return $result;
 	}
 
 
@@ -178,7 +109,10 @@ class Filesystem implements \TreasureChest\CacheInterface
 	 */
 	public function inc($key, $step = 1, &$success = null)
 	{
-		return $this->atomicAdjust($this->getPath($key), $step, $success);
+		$result = $this->memcached->increment($key, $step);
+		$success = ($result !== false);
+		
+		return $result;
 	}
 	
 	/**
@@ -192,7 +126,10 @@ class Filesystem implements \TreasureChest\CacheInterface
 	 */
 	public function dec($key, $step = 1, &$success = null)
 	{
-		return $this->atomicAdjust($this->getPath($key), -$step, $success);
+		$result = $this->memcached->decrement($key, $step);
+		$success = ($result !== false);
+		
+		return $result;
 	}
 	
 	/**
@@ -203,10 +140,11 @@ class Filesystem implements \TreasureChest\CacheInterface
 	 * @param string $key They key to delete
 	 * @return bool Returns TRUE if the key exists, otherwise FALSE
 	 */
-	public function delete($key)
+	public function delete($key, $wait = 0)
 	{
-		return unlink($this->getPath($key));
+		return $this->memcached->delete($key, $wait);
 	}
 
-	
+
+
 }

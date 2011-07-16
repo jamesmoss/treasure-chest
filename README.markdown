@@ -10,8 +10,8 @@ Internally, TreasureChest uses a pointer which keeps track of the version number
 Requirements
 -----------------------------------
 - PHP 5.3 or higher
-- APC 3.1.4 or higher (if using APC as backend)
-- Memcached 1.2.0 or higher (if using memcached as backend)
+- APC 3.1.1 or higher (if using APC as backend)
+- Memcached 1.2.0 and PECL memcached 0.1.0 or higher (if using Memcached as backend)
 
 Usage
 -----------------------------------
@@ -26,7 +26,7 @@ Create an instance of the TreasureChest class, passing in an instance of the dat
 	$bounty = new \TreasureChest\Instance(new \TreasureChest\Cache\APC);
 
 
-Use the `add`, `store`, `fetch`, `exists`, `inc`, `dec` and `delete` methods to store and retrieve your data.
+Use the `add`, `store`, `fetch`, `replace`, `exists`, `inc`, `dec` and `delete` methods to store, retrieve and manipulate your data.
 e.g
 
 	$bounty->store('email', 'bob@example.org');

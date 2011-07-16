@@ -1,38 +1,64 @@
-NamespaceCache
+TreasureChest
 ==================================
 
-A wrapper around the apc_* functions which make it possible to use namespaces with keys when manipulating data in the user cache. NamespaceCache makes it possible to logically group a set of keys and invalidate them all at once making cache management much easier.  This also lets you get around the problem of not being able to use wildcards when wanting to delete a whole series of related keys.
+A simple key/value store with namespace support and backends for memcached, apc, filesystem and more.
 
-It's impossible to do `apc_store('user1_username', 'bob')` and then `apc_delete('user1_*');`. Using this class you can simply do `NamespaceCache::store('user1', 'username', 'bob')` and then `NamespaceCache::invalidate('user1')`.
+TreasureChest's biggest feature is namespaces. Most existing key/value stores place your data in a single global environment, this can lead to clashing key names in large datasets. They also don't support wildcards when deleting keys. It's impossible to do something like `store('user1_username', 'bob')` and then `delete('user1_*');`. This makes tracking and invalidating large sets of related keys difficult. TreasureChest provides a wrapper around your favourite key/value store (memcached, apc, xcache etc) making this possible.
 
-Internally, NamespaceCache uses a pointer (also stored in the user cache) that keeps track of the version number of each namespace. This version number is prefixed to all keys which get passed into the class. When a namespace is `invalidate`'ed the pointer is incremented by one, thereby changing the key which gets passed to APC.
+Internally, TreasureChest uses a pointer which keeps track of the version number of each namespace. This version number is prefixed to all keys which get passed into the class. When a namespace is `invalidate`ed the pointer is incremented by 1, thereby changing the key which gets passed to the datastore.
 
 Requirements
 -----------------------------------
 - PHP 5.3 or higher
-- APC 3.1.4 or higher
+- APC 3.1.4 or higher (if using APC as backend)
+- Memcached 1.2.0 or higher (if using memcached as backend)
 
 Usage
 -----------------------------------
-All the NamespaceCache methods are static and have (almost) identical function signatures to their apc_ equivilents. The only change is an additional first parameter, a string, which is the namespace to be used for that key.
 
+Include and register the autoloader, this takes care of loading all other classes.
+
+	include('../lib/TreasureChest/Autoloader.php');
+	\TreasureChest\Autoloader::register();
+	
+Create an instance of the TreasureChest class, passing in an instance of the datastore you wish to use.
+
+	$bounty = new \TreasureChest\Instance(new \TreasureChest\Cache\APC);
+
+
+Use the `add`, `store`, `fetch`, `exists`, `inc`, `dec` and `delete` methods to store and retrieve your data.
 e.g
 
-	apc_fetch('key123');
+	$bounty->store('email', 'bob@example.org');
+	$bounty->store('age', 45);
+	$bounty->fetch('email'); // returns bob@example.org
+	$bounty->inc('age', 5); // returns 50
+	$bounty->dec('age', 10); // returns 40
+	$bounty->delete('email');
+	$bounty->fetch('email'); // returns boolean FALSE
+	
+Namespaces can be used to logically group sets of key/pairs. Simply append the key with the desired namespace, separated by a colon (this delimiter character can be changed) 
+e.g
 
-becomes
-
-	NamespaceCache::fetch('namespace123', 'key123');
-
-To clear all the keys associated to a namespace use the `NamespaceCache::invalidate` method.
+	$bounty->add('user123:username', 'bob');
+	$bounty->add('user123:email', 'bob@example.org');
+	$bounty->add('user123:age', 21);
+	
+	// Clear the entire user123 namespace
+	$cache->invalidate('user123');
+	
+	$cache->fetch('user123:username'); // returns boolean FALSE
+	$cache->fetch('user123:email'); // returns boolean FALSE
+	$cache->fetch('user123:age'); // returns boolean FALSE
 
 
 Known issues
 -----------------------------------
-There is currently a concurrency issue which can lead to a NamespaceCache returning data which should have been invalidated if another PHP process calls `invalidate` whilst the first process is still running.  This can be fixed by checking the namespace version number before each call to `fetch`, `store` etc.  This has a performance impact so I'll be making it a user enabled option.
+There is currently a concurrency issue which can lead to TreasureChest returning data which should have been invalidated. This happens if another PHP process calls `invalidate` whilst the first process is still running.  This can be fixed by checking the namespace version number before each call to `fetch`, `store` etc.  This has a performance impact so I'll be making it a user enabled option.
 
 To do
 -----------------------------------
 - Introduce option to check namespace version before every APC call.
 - Improve testing suite. Introduce automated unit tests using PHPUnit.
+- Add support to automatically serialize/unserialize objects/arrays stored in the cache
 - Improve README file

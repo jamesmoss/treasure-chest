@@ -6,7 +6,7 @@ namespace TreasureChest;
 class Autoloader
 {
     /**
-     * Registers Twig\Autoloader as an SPL autoloader.
+     * Registers TreasureChest\Autoloader as an SPL autoloader.
      */
     static public function register()
     {

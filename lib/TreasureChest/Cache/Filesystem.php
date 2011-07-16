@@ -142,7 +142,8 @@ class Filesystem implements \TreasureChest\CacheInterface
 	 */
 	public function exists($key)
 	{
-		return file_exists($this->getPath($key));
+		$file = $this->getPath($key);
+		return (file_exists($file) && filemtime($file) > time());
 	}
 	
 	

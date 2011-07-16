@@ -34,6 +34,24 @@ class APC implements \TreasureChest\CacheInterface
 	}
 	
 	/**
+	 * Replaces a variable in the cache, only if it already exists.
+	 *
+	 * @author James Moss
+	 * @param string $key Store the variable using this name. 
+	 * @param string $var The variable to store
+	 * @param int $ttl Number of seconds to store this variable. 0 will mean that it never expires.
+	 * @return bool TRUE on success, FALSE on failure
+	 */
+	public function replace($key, $var = null, $ttl = 0)
+	{
+		if(!$this->exists($key)) {
+			return false;
+		}
+		
+		return $this->store($key, $var, $ttl);
+	}
+	
+	/**
 	 * Checks if APC key exists
 	 *
 	 * @author James Moss

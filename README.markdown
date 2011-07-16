@@ -37,7 +37,7 @@ e.g
 	$bounty->delete('email');
 	$bounty->fetch('email'); // returns boolean FALSE
 	
-Namespaces can be used to logically group sets of key/pairs. Simply append the key with the desired namespace, separated by a colon (this delimiter character can be changed) 
+Namespaces can be used to logically group sets of key/value pairs. Simply append the key with the desired namespace, separated by a colon (this delimiter character can be changed) 
 e.g
 
 	$bounty->add('user123:username', 'bob');

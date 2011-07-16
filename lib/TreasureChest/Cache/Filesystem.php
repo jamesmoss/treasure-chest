@@ -9,14 +9,15 @@ class Filesystem implements \TreasureChest\CacheInterface
 	protected $path;
 	
 	/**
-	 * __construct function.
+	 * __constructor
 	 * 
 	 * @access public
-	 * @param string $dir (default: '/tmp')
+	 * @param string $dir Path to a writeable folder in which store the cache (default: '/tmp')
 	 * @return void
 	 */
 	public function __construct($dir = '/tmp')
 	{
+		// Doesnt matter if the path has a trailing slash or not, we remove it.
 		$this->path = rtrim($dir, '/').'/';
 		
 		if(!is_writable($this->path)) {
@@ -25,17 +26,26 @@ class Filesystem implements \TreasureChest\CacheInterface
 	}
 	
 	/**
-	 * getPath function.
+	 * Returns the full path to the file for the provided key 
 	 * 
 	 * @access protected
-	 * @param mixed $key
-	 * @return void
+	 * @param string $key The key identifier
+	 * @return string The full path to the cache file
 	 */
 	protected function getPath($key)
 	{
 		return $this->path.sha1($key);
 	}
 	
+	/**
+	 * Atomically adjusts (increment or decrements) an integer stored in a file.
+	 * 
+	 * @access protected
+	 * @param string $file
+	 * @param integer $step
+	 * @param boolean &$success
+	 * @return mixed The new adjusted value on success, FALSE on failure.
+	 */
 	protected function atomicAdjust($file, $step, &$success)
 	{
 		$success = false;
@@ -103,6 +113,24 @@ class Filesystem implements \TreasureChest\CacheInterface
 		}
 		
 		return touch($file, time() + $ttl);
+	}
+	
+	/**
+	 * Replaces a variable in the cache, only if it already exists.
+	 *
+	 * @author James Moss
+	 * @param string $key Store the variable using this name. 
+	 * @param string $var The variable to store
+	 * @param int $ttl Number of seconds to store this variable. 0 will mean that it never expires.
+	 * @return bool TRUE on success, FALSE on failure
+	 */
+	public function replace($key, $var = null, $ttl = 0)
+	{
+		if(!$this->exists($key)) {
+			return false;
+		}
+		
+		return $this->store($key, $var, $ttl);
 	}
 	
 	/**

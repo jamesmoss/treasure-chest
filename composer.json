@@ -1,6 +1,5 @@
 {
 	"name": "treasure-chest/treasure-chest",
-	"type": "library",
 	"description": "A simple key/value store with namespace support and backends for memcached, apc, and more.",
 	"keywords": ["apc","memcached", "caching", "cache"],
 	"homepage": "http://github.com/jamesmoss/treasure-chest",
@@ -9,7 +8,7 @@
 		{
 			"name": "James Moss",
 			"email": "email@jamesmoss.co.uk",
-			"homepage": "http://jamesmoss.co.uk",
+			"homepage": "http://jamesmoss.co.uk"
 		}
 	],
 	"require": {

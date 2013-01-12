@@ -57,8 +57,10 @@ class Filesystem implements \TreasureChest\CacheInterface
 		} else {
 		    $value = trim(fread($fp, 1000));
 		    if($value === '') {
-		    	$value = 0;
+		    	$value = '0|0';
 		    }
+
+		    list($header, $value) = explode('|', $value, 2);
 		    
 		    $value = filter_var($value, FILTER_VALIDATE_INT);
 		    
@@ -66,7 +68,7 @@ class Filesystem implements \TreasureChest\CacheInterface
 		    	$value += $step;
 		    	 
 		    	ftruncate($fp, 0);
-		    	fwrite($fp, $value);
+		    	fwrite($fp, $header.'|'.$value);
 		    }
 		    
 		    flock($fp, LOCK_UN); // release the lock
@@ -106,7 +108,16 @@ class Filesystem implements \TreasureChest\CacheInterface
 	public function store($key, $var = null, $ttl = 0)
 	{
 		$file = $this->getPath($key);
-		$write = file_put_contents($file, $var);
+
+		$wasSerialized = false;
+		if(is_object($var) || is_array($var)) {
+			$var = serialize($var);
+			$wasSerialized = true;
+		}
+
+		// Put some headers into the file and write it
+		$data = ((int)$wasSerialized).'|'.$var;
+		$write = file_put_contents($file, $data);
 		
 		if(!$write) {
 			return false;
@@ -162,7 +173,16 @@ class Filesystem implements \TreasureChest\CacheInterface
 			return false;
 		}
 
-		return file_get_contents($this->getPath($key));
+		// Get data and extract headers
+		$data = file_get_contents($this->getPath($key));
+		list($header, $var) = explode('|', $data, 2);
+
+		// Detect if we need to unserialize this
+		if($header == 1) {
+			$var = unserialize($var);
+		}
+
+		return $var;
 	}
 
 

@@ -73,8 +73,9 @@ class FauxCache implements CacheInterface
 	{
 		$oldVal = (int)$this->fetch($key);
 		$this->data[$key][0] = $oldVal + $step;
+		$success = true;
 
-		return $success = true;
+		return $this->data[$key][0];
 	}
 	
 	/**
@@ -84,8 +85,9 @@ class FauxCache implements CacheInterface
 	{
 		$oldVal = (int)$this->fetch($key);
 		$this->data[$key][0] = $oldVal - $step;
+		$success = true;
 
-		return $success = true;
+		return $this->data[$key][0];
 	}
 	
 	/**

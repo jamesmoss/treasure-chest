@@ -78,6 +78,7 @@ class Instance
 	public function setDelimiter($delimiter)
 	{
 		$this->delimiter = $delimiter;
+		$this->mapper->setDelimiter($delimiter);
 	}
 
 	/**
@@ -88,6 +89,7 @@ class Instance
 	public function setMapper(KeyMapperInterface $mapper)
 	{
 		$this->mapper = $mapper;
+		$this->mapper->setDelimiter($this->delimiter);
 	}
 
 	

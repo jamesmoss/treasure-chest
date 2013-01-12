@@ -15,19 +15,20 @@ class KeyMapper implements KeyMapperInterface
 	protected $index = array();
 	
 	/**
-	 * This string is prefixed to all namespace keys to prevent clashes with normal APC keys
+	 * This string is prefixed to all namespace verion keys to prevent clashes 
+	 * with other keys in the datastore.
 	 *
 	 * @var string 
 	 */
 	protected $prefix = 'ns';
 
-	public $delimiter;
+	protected $delimiter;
 
 
 	public function __construct(CacheInterface $cache, $delimiter = ':')
 	{
 		$this->cache = $cache;
-		$this->delimiter = $delimiter;
+		$this->setDelimiter($delimiter);
 	}
 
 	public function parse($key)
@@ -46,6 +47,16 @@ class KeyMapper implements KeyMapperInterface
 		return $this->getNamespaceKey($namespaces, $key);
 	}
 
+	public function clearIndex()
+	{
+		$this->index = array();
+	}
+
+	public function setDelimiter($delimiter)
+	{
+		$this->delimiter = $delimiter;
+	}
+
 	/**
 	 * generates the final cache identifier for the provided namespace and key
 	 *
@@ -61,18 +72,21 @@ class KeyMapper implements KeyMapperInterface
 		}
 
 		$component = '';
+		$seperator = '_';
 		$parts = array();
 		foreach($namespaces as $namespace) {
-			$component.= '_'.$namespace;
+			$component.= $seperator.$namespace;
 			$parts[] = $this->getVersionNumber($component);
 		}
 
 		$versionKey = implode($this->delimiter, $parts);
 		
 		// generate the full key which will be passed to the low level cache functions
-		$new_key = $component.$this->delimiter.$versionKey.$this->delimiter.$key;
+		$newKey = $versionKey.$this->delimiter;
+		$newKey.= substr($component, 1).$this->delimiter;
+		$newKey.= $key;
 		
-		return $new_key;
+		return $newKey;
 	}
 	
 	protected function getVersionNumber($namespace)

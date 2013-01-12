@@ -3,7 +3,7 @@
 namespace TreasureChest\Cache;
 
 
-class Filesystem implements \TreasureChest\CacheInterface
+class Filesystem extends \PHPUnit_Framework_TestCase
 {
 
 	protected $path;
@@ -122,8 +122,10 @@ class Filesystem implements \TreasureChest\CacheInterface
 		if(!$write) {
 			return false;
 		}
+
+		$ttl = ($ttl === 0) ? PHP_INT_MAX : time() + $ttl;
 		
-		return touch($file, time() + $ttl);
+		return touch($file, $ttl);
 	}
 	
 	/**

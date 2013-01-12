@@ -26,7 +26,9 @@ class FauxCache implements CacheInterface
 	 */
 	public function store($key, $var = null, $ttl = 0)
 	{
-		$this->data[$key] = array($var, time() + $ttl);
+		$ttl = ($ttl === 0) ? PHP_INT_MAX : time() + $ttl;
+
+		$this->data[$key] = array($var, $ttl);
 		
 		return true;
 	}
@@ -62,7 +64,7 @@ class FauxCache implements CacheInterface
 			return false;
 		}
 		
-		return $this->data[$key];
+		return $this->data[$key][0];
 	}
 
 

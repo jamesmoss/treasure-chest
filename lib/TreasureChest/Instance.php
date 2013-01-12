@@ -91,19 +91,14 @@ class Instance
 		$this->mapper = $mapper;
 		$this->mapper->setDelimiter($this->delimiter);
 	}
-
 	
 	/**
-	 * Deletes all the keys in an entire namespace
+	 * Deletes all the keys in an entire namespace.
 	 *
 	 * @param string $namespace The namespace in which this variable is associated.
 	 */
 	public function invalidate($namespace)
 	{
-		$version_key = $this->getVersionKey($namespace);
-		
-		if($this->cache->exists($version_key)) {
-			$this->index[$namespace] = $this->cache->inc($version_key, 1);
-		}
+		return $this->mapper->invalidate($namespace);
 	}
 }

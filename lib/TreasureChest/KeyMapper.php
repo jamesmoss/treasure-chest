@@ -15,7 +15,7 @@ class KeyMapper implements KeyMapperInterface
 	protected $index = array();
 	
 	/**
-	 * This string is prefixed to all namespace verion keys to prevent clashes 
+	 * This string is prefixed to all namespace version keys to prevent clashes 
 	 * with other keys in the datastore.
 	 *
 	 * @var string 
@@ -47,20 +47,18 @@ class KeyMapper implements KeyMapperInterface
 		return $this->getNamespaceKey($namespaces, $key);
 	}
 
-	public function clearIndex()
-	{
-		$this->index = array();
-	}
-
 	public function setDelimiter($delimiter)
 	{
+		if(strlen($delimiter) !== 1) {
+			throw new Exception('Cache delimiter must be exactly one character.');
+		}
+		
 		$this->delimiter = $delimiter;
 	}
 
 	/**
 	 * generates the final cache identifier for the provided namespace and key
 	 *
-	 * @author James Moss
 	 * @param $namespace
 	 * @param $key
 	 * @return string The final key name which gets passed to the store
@@ -72,17 +70,14 @@ class KeyMapper implements KeyMapperInterface
 		}
 
 		$component = '';
-		$seperator = '_';
 		$parts = array();
 		foreach($namespaces as $namespace) {
-			$component.= $seperator.$namespace;
-			$parts[] = $this->getVersionNumber($component);
+			$component.= $this->delimiter.$namespace;
+			$parts[] = $this->getVersionNumber(substr($component, 1));
 		}
-
-		$versionKey = implode($this->delimiter, $parts);
 		
 		// generate the full key which will be passed to the low level cache functions
-		$newKey = $versionKey.$this->delimiter;
+		$newKey = implode($this->delimiter, $parts).$this->delimiter;
 		$newKey.= substr($component, 1).$this->delimiter;
 		$newKey.= $key;
 		
@@ -115,13 +110,32 @@ class KeyMapper implements KeyMapperInterface
 	/**
 	 * Gets the current version of the provided namespace
 	 *
-	 * @author James Moss
 	 * @param string $namespace 
 	 * @return string 
 	 */
 	protected function getVersionKey($namespace)
 	{
-		// an example version key might be ns:version:news
+		// an example version key might be ns:version:user:james:age
 		return $this->prefix.$this->delimiter.'version'.$this->delimiter.$namespace;
+	}
+
+	public function invalidate($namespace)
+	{
+		if(!$namespace) {
+			return false;
+		}
+
+		$versionKey = $this->getVersionKey($namespace);
+
+		if($this->cache->exists($versionKey)) {
+			$this->index[$namespace] = $this->cache->inc($versionKey);
+		} else {
+			$this->cache->store($versionKey, 1);
+		}
+
+		// Reset the index
+		$this->index = array();
+
+		return true;
 	}
 }

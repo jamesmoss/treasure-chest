@@ -9,7 +9,7 @@
  * Note: This library requires APC version 3.1.4 or higher.
  * 
  * @author James Moss <email@jamesmoss.co.uk>
- * @version 0.1
+ * @version 0.2
  * @package namespace-cache
  */
  
@@ -26,7 +26,7 @@ class Instance
 	protected $delimiter = ':';
 
 	/**
-	 * This key can be appended to the start of all other keys passed in to 
+	 * This namespace can be appended to the start of all other keys passed in to 
 	 * the class to faciliate logical partitioning of cache data.
 	 *
 	 * @var string 
@@ -61,11 +61,9 @@ class Instance
 	}
 	
 	/**
-	 * Gets the current version of the provided namespace
+	 * Sets the current version of the provided namespace
 	 *
-	 * @author James Moss
 	 * @param string $prefix The new prefix to use 
-	 * @return void 
 	 */
 	public function setPrefix($prefix)
 	{
@@ -73,24 +71,30 @@ class Instance
 	}
 	
 	/**
-	 * Gets the current version of the provided namespace
+	 * Sets the namespace delimiter
 	 *
-	 * @author James Moss
-	 * @param string $prefix The new deimiter to use 
-	 * @return void 
+	 * @param string $prefix The new delimiter to use 
 	 */
 	public function setDelimiter($delimiter)
 	{
 		$this->delimiter = $delimiter;
 	}
 
+	/**
+	 * Set your own custom mapper.
+	 * 
+	 * @param KeyMapperInterface $mapper [description]
+	 */
+	public function setMapper(KeyMapperInterface $mapper)
+	{
+		$this->mapper = $mapper;
+	}
+
 	
 	/**
 	 * Deletes all the keys in an entire namespace
 	 *
-	 * @author James Moss
 	 * @param string $namespace The namespace in which this variable is associated.
-	 * @return return type
 	 */
 	public function invalidate($namespace)
 	{

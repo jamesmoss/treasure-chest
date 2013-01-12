@@ -17,127 +17,48 @@
 namespace TreasureChest;
  
 class Instance
-{
+{	
 	/**
-	 * Holds the current version number for each namespace
-	 *
-	 * @var array 
-	 */
-	protected $index = array();
-	
-	/**
-	 * This string is prefixed to all namespace keys to prevent clashes with normal APC keys
-	 *
-	 * @var string 
-	 */
-	protected $prefix = 'ns';
-	
-	/**
-	 * This string is prefixed to all namespace keys to prevent clashes with normal APC keys
+	 * The character used to indicate the seperation of cache namespaces
 	 *
 	 * @var string 
 	 */
 	protected $delimiter = ':';
+
+	/**
+	 * This key can be appended to the start of all other keys passed in to 
+	 * the class to faciliate logical partitioning of cache data.
+	 *
+	 * @var string 
+	 */
+	protected $prefix = '';
 	
 	public function __construct($cache)
 	{
 		$this->cache = $cache;
+		$this->mapper = new KeyMapper($this->cache, $this->delimiter);
 	}
-	
 	
 	public function __call($method, $args)
 	{
-		$allowedMethods = array(
-			'add', 'store', 'exists', 'fetch', 'inc', 'dec', 'delete'
-		);
+		// Only the methods from the CacheInterface are allowed to be called
+		$allowedMethods = get_class_methods('\\'.__NAMESPACE__.'\\CacheInterface');
 		
 		if(!in_array($method, $allowedMethods)) {
-			throw new TreasureChestException('Unknown method '.$method);
+			throw new Exception('Unknown method '.$method);
+		}
+
+		// If we are auto prefixing all keys with a namespace, do that here
+		if($this->prefix) {
+			$args[0] = $this->prefix.$this->delimiter.$args[0];
 		}
 		
-		list($namespace, $key) = explode($this->delimiter, $args[0], 2);
+		// convert the user supplied key into one actually used in the cache
+		$args[0] = $this->mapper->parse($args[0]);
 		
-		// if no namespace is used
-		if(!$key) {
-			$key = $namespace;
-			$namespace = '';
-		}
-		
-		$args[0] = $this->getNamespaceKey($namespace, $key);
-		
+		// Call the method on the cache class, passing in supplied arguments
 		return call_user_func_array(array($this->cache, $method), $args);
 	}
-	
-	/**
-	 * generates the final cache identifier for the provided namespace and key
-	 *
-	 * @author James Moss
-	 * @param $namespace
-	 * @param $key
-	 * @return string The final key name which gets passed to the store
-	 */
-	protected function getNamespaceKey($namespace, $key)
-	{
-		if(empty($namespace)) { 
-			return $key;
-		}
-		
-		// see if the namespace version exists in the index
-		if(!isset($this->index[$namespace])) {
-		
-			// get the latest version number for this namespace
-			$version_key = $this->getVersionKey($namespace);
-			$version = $this->cache->fetch($version_key);
-			
-			// if there is no version number then this namespace has never been used before.
-			if($version === false) {
-				// create a new version number starting at 0
-				$this->cache->add($version_key, 0);
-				$this->index[$namespace] = 0;
-			} else {
-				$this->index[$namespace] = $version;
-			}
-		}
-		
-		// generate the full key which will be passed to the native APC functions
-		$new_key = $this->prefix.$this->delimiter.$namespace.$this->delimiter.'v'.$this->index[$namespace].$this->delimiter.$key;
-		
-		return $new_key;
-	}
-	
-	
-	/**
-	 * Gets the current version of the provided namespace
-	 *
-	 * @author James Moss
-	 * @param string $namespace 
-	 * @return string 
-	 */
-	protected function getVersionKey($namespace)
-	{
-		// an example version key might be ns:version:news
-		return $this->prefix.$this->delimiter.'version'.$this->delimiter.$namespace;
-	}
-	
-	protected function parseNamespace($key)
-	{
-		$position = strpos($key, $this->delimiter);
-		
-		// no namespace used in this key
-		if($position === false) {
-			$namespace = '';
-		} else {
-			$namespace = substr($key, 0, $position - 1);
-			$key 	   = substr($key, -$position);
-		}
-		
-		return array(
-			'namespace'	=> $namespace,
-			'key'		=> $key,
-		);
-	}
-	
-	
 	
 	/**
 	 * Gets the current version of the provided namespace

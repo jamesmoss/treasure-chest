@@ -3,10 +3,10 @@
 // This file will be updated to use PHPUnit in the near future.
 
 
-include('../lib/TreasureChest/Autoloader.php');
+include(__DIR__.'/../lib/TreasureChest/Autoloader.php');
 \TreasureChest\Autoloader::register();
 
-
+/*
 $cache = new \TreasureChest\Instance(new TreasureChest\Cache\Filesystem('/tmp'));
 
 // Add a few dummy items to the cache
@@ -27,4 +27,4 @@ $cache->invalidate('user123');
 var_dump($cache->fetch('user123:username'));
 var_dump($cache->fetch('user123:email'));
 var_dump($cache->fetch('user123:age'));
-
+*/

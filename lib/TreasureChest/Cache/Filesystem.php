@@ -2,8 +2,11 @@
 
 namespace TreasureChest\Cache;
 
+use TreasureChest\Exception;
+use TreasureChest\CacheInterface;
 
-class Filesystem extends \PHPUnit_Framework_TestCase
+
+class Filesystem implements CacheInterface
 {
 
 	protected $path;
@@ -21,7 +24,7 @@ class Filesystem extends \PHPUnit_Framework_TestCase
 		$this->path = rtrim($dir, '/').'/';
 		
 		if(!is_writable($this->path)) {
-			throw new \TreasureChest\Exception\Cache('Cache directory is not writable');
+			throw new Exception('Cache directory is not writable');
 		}
 	}
 	
@@ -34,7 +37,9 @@ class Filesystem extends \PHPUnit_Framework_TestCase
 	 */
 	protected function getPath($key)
 	{
-		return $this->path.sha1($key);
+		$safeName = preg_replace('/[^a-zA-Z0-9\:\.\-\|\!\?\,]/us', '_', $key);
+
+		return $this->path.$safeName.'_'.substr(sha1($key), -8);
 	}
 	
 	/**
@@ -156,6 +161,7 @@ class Filesystem extends \PHPUnit_Framework_TestCase
 	public function exists($key)
 	{
 		$file = $this->getPath($key);
+
 		return (file_exists($file) && filemtime($file) > time());
 	}
 	

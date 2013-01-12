@@ -157,14 +157,12 @@ class Filesystem implements \TreasureChest\CacheInterface
 	 */
 	public function fetch($key, &$success = false)
 	{
-		$file = $this->getPath($key);
-		
-		if(!file_exists($file) || filemtime($file) < time()) {
+		if(!$this->exists($key)) {
 			$success = false;
 			return false;
 		}
-		
-		return file_get_contents($file);
+
+		return file_get_contents($this->getPath($key));
 	}
 
 

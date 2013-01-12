@@ -12,6 +12,6 @@ class KeyMapperTest extends \PHPUnit_Framework_TestCase
 
 		$key = 'test:users:james:age';
 
-		var_dump($mapper->parse($key));
+		$mapper->parse($key);
 	}
 }

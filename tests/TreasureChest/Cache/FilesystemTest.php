@@ -7,8 +7,10 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 {
 	public function setUp()
 	{
-		mkdir(__DIR__.'/tmp');
-		chmod(__DIR__.'/tmp', 0777);
+		if(!is_dir($dir = __DIR__.'/tmp')) {
+			mkdir($dir);
+			chmod($dir, 0777);
+		}
 
 		$this->cache = new Filesystem(__DIR__.'/tmp');
 	}

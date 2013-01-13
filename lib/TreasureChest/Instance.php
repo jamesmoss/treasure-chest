@@ -99,6 +99,10 @@ class Instance
 	 */
 	public function invalidate($namespace)
 	{
+		if($this->prefix) {
+			$namespace = $this->prefix.$this->delimiter.$namespace;
+		}
+
 		return $this->mapper->invalidate($namespace);
 	}
 }

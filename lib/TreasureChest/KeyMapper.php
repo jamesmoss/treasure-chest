@@ -4,6 +4,8 @@ namespace TreasureChest;
 
 /**
 * KeyMapper Class
+*
+* Translates a key name with namespaces into one usable in the low level cache.
 */
 class KeyMapper implements KeyMapperInterface
 {
@@ -52,7 +54,7 @@ class KeyMapper implements KeyMapperInterface
 		if(strlen($delimiter) !== 1) {
 			throw new Exception('Cache delimiter must be exactly one character.');
 		}
-		
+
 		$this->delimiter = $delimiter;
 	}
 

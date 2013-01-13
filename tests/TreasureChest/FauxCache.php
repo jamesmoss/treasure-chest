@@ -105,4 +105,11 @@ class FauxCache implements CacheInterface
 
 		return true;
 	}
+
+	public function clear()
+	{
+		$this->data = array();
+		
+		return true;
+	}
 }

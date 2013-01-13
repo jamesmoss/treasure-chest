@@ -54,11 +54,10 @@ e.g
 
 Known issues
 -----------------------------------
-There is currently a concurrency issue which can lead to TreasureChest returning data which should have been invalidated. This happens if another PHP process calls `invalidate` whilst the first process is still running.  This can be fixed by checking the namespace version number before each call to `fetch`, `store` etc.  This has a performance impact so I'll be making it a user enabled option.
+There is currently a concurrency issue which can lead to TreasureChest returning data which should have been invalidated. This happens if another PHP process calls `invalidate` whilst the first process is still running.  This could be fixed by checking the namespace version number before each call to `fetch`, `store` etc.  This has a performance impact so I'll be making it a user enabled option.
 
 To do
 -----------------------------------
-- Introduce option to check namespace version before every APC call.
-- Improve testing suite. Introduce automated unit tests using PHPUnit.
-- Add support to automatically serialize/unserialize objects/arrays stored in the cache
+- Introduce option to check namespace version before every cache call.
+- Improve testing suite. Expand current PHPUnit tests to cover more code.
 - Improve README file

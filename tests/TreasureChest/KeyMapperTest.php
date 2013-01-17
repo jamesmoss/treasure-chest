@@ -20,6 +20,8 @@ class KeyMapperTest extends \PHPUnit_Framework_TestCase
 	{
 		$key = 'blog:date';
 		$this->assertEquals('0:blog:date', $this->mapper->parse($key));
+		// Assert the same again - the second time it will be got from the index
+		$this->assertEquals('0:blog:date', $this->mapper->parse($key));
 	}
 
 	public function testMultipleNamespaces()
@@ -57,6 +59,11 @@ class KeyMapperTest extends \PHPUnit_Framework_TestCase
 
 		$this->mapper->invalidate('product');
 		$this->assertEquals('2:product:title', $this->mapper->parse($key));
+	}
+
+	public function testInvalidatingEmpty()
+	{
+		$this->assertFalse($this->mapper->invalidate(''));
 	}
 
 	public function testSettingDelimiter()

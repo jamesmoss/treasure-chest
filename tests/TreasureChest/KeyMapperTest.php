@@ -32,7 +32,7 @@ class KeyMapperTest extends \PHPUnit_Framework_TestCase
 	{
 		$key = 'catalogue:shirts:product:title';
 		$this->assertEquals('0:0:0:catalogue:shirts:product:title', $this->mapper->parse($key));
-		
+
 		$this->mapper->invalidate('catalogue');
 		$this->assertEquals('1:0:0:catalogue:shirts:product:title', $this->mapper->parse($key));
 
@@ -62,5 +62,14 @@ class KeyMapperTest extends \PHPUnit_Framework_TestCase
 	public function testSettingDelimiter()
 	{
 		$this->mapper->setDelimiter('.');
+	}
+
+	/**
+	 * @expectedException        TreasureChest\Exception
+	 * @expectedExceptionMessage delimiter must be exactly one character
+	 */
+	public function testSettingLongDelimiter()
+	{
+		$this->mapper->setDelimiter('--');
 	}
 }

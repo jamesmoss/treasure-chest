@@ -16,7 +16,7 @@
 	},
 	"suggest": {
 		"ext-apc"     : "Install to use the APC datastore",
-		"ext-memcache": "Install to use the memcached datastore",
+		"ext-memcache": "Install to use the memcached datastore"
 	},
 	"autoload": {
 		"psr-0": {

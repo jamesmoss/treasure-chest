@@ -8,7 +8,6 @@ class APC implements \TreasureChest\CacheInterface
 	/**
 	 * Stores a variable in the cache, if it doesnt already exist.
 	 *
-	 * @author James Moss
 	 * @param string $namespace The namespace in which this variable is associated.
 	 * @param string $var The variable to store
 	 * @param int $ttl Number of seconds to store this variable. 0 will mean that it never expires.
@@ -22,7 +21,6 @@ class APC implements \TreasureChest\CacheInterface
 	/**
 	 * Stores a variable in the cache, overwriting any existing variable.
 	 *
-	 * @author James Moss
 	 * @param string $key Store the variable using this name. 
 	 * @param string $var The variable to store
 	 * @param int $ttl Number of seconds to store this variable. 0 will mean that it never expires.
@@ -36,7 +34,6 @@ class APC implements \TreasureChest\CacheInterface
 	/**
 	 * Replaces a variable in the cache, only if it already exists.
 	 *
-	 * @author James Moss
 	 * @param string $key Store the variable using this name. 
 	 * @param string $var The variable to store
 	 * @param int $ttl Number of seconds to store this variable. 0 will mean that it never expires.
@@ -54,7 +51,6 @@ class APC implements \TreasureChest\CacheInterface
 	/**
 	 * Checks if APC key exists
 	 *
-	 * @author James Moss
 	 * @param string $key Store the variable using this name. 
 	 * @return bool Returns TRUE if the key exists, otherwise FALSE
 	 */
@@ -73,7 +69,6 @@ class APC implements \TreasureChest\CacheInterface
 	/**
 	 * Fetchs a stored variable from the cache. 
 	 *
-	 * @author James Moss
 	 * @param string $key Retreieve variable assigned to this name.
 	 * @param bool $success Set to TRUE in success and FALSE in failure.  
 	 * @return mixed The stored variable or array of variables on success; FALSE on failure
@@ -87,7 +82,6 @@ class APC implements \TreasureChest\CacheInterface
 	/**
 	 * Atomically increments a stored number. 
 	 *
-	 * @author James Moss
 	 * @param string $key The key of the value being increased.
 	 * @param int $step The step, or value to increase.
 	 * @param bool $success Set to TRUE in success and FALSE in failure. 
@@ -101,7 +95,6 @@ class APC implements \TreasureChest\CacheInterface
 	/**
 	 * Atomically decrements a stored number. 
 	 *
-	 * @author James Moss
 	 * @param string $key The key of the value being decreased.
 	 * @param int $step The step, or value to increase.
 	 * @param bool $success Set to TRUE in success and FALSE in failure. 
@@ -115,7 +108,6 @@ class APC implements \TreasureChest\CacheInterface
 	/**
 	 * Deletes an individual key from the cache
 	 *
-	 * @author James Moss
 	 * @param string $namespace The namespace in which this variable is associated.
 	 * @param string $key They key to delete
 	 * @return bool Returns TRUE if the key exists, otherwise FALSE
@@ -123,6 +115,18 @@ class APC implements \TreasureChest\CacheInterface
 	public function delete($key)
 	{
 		return \apc_delete($key);
+	}
+
+	/**
+	 * Clears the entire cache
+	 *
+	 * @return bool Returns TRUE if the cache was cleared, otherwise FALSE
+	 */
+	public function clear()
+	{
+		apc_clear_cache('user');
+
+		return true;
 	}
 
 

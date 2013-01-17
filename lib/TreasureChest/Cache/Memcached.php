@@ -145,6 +145,13 @@ class Memcached implements \TreasureChest\CacheInterface
 		return $this->memcached->delete($key, $wait);
 	}
 
-
-
+	/**
+	 * Clears the entire cache
+	 *
+	 * @return bool Returns TRUE if the cache was cleared, otherwise FALSE
+	 */
+	public function clear()
+	{
+		return $this->memcached->flush();
+	}
 }

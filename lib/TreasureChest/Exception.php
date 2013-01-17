@@ -6,6 +6,3 @@ class Exception extends \Exception
 {
 
 }
-
-
-?>

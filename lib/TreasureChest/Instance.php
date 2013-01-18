@@ -76,46 +76,107 @@ class Instance implements CacheInterface
 		$this->mapper->setDelimiter($this->delimiter);
 	}
 
+	/**
+	 * Store a variable in the cache if it doesn't already exist.
+	 *
+	 * @param string  $key Key to use when storing this variable
+	 * @param mixed   $var Variable to store
+	 * @param integer $ttl Number of seconds to store this variable for, setting
+	 *                     to 0 means it will never expire
+	 */
 	public function add($key, $var = null, $ttl = 0)
 	{
 		return $this->_callCacheMethod('add', func_get_args());
 	}
 
+	/**
+	 * Store a variable in the cache, overwriting any saved variable of the same
+	 * name.
+	 *
+	 * @param string  $key Key to use when storing this variable
+	 * @param mixed   $var Variable to store
+	 * @param integer $ttl Number of seconds to store this variable for, setting
+	 *                     to 0 means it will never expire
+	 */
 	public function store($key, $var = null, $ttl = 0)
 	{
 		return $this->_callCacheMethod('store', func_get_args());
 	}
 
+	/**
+	 * Replace a variable in the cache, only if it already exists.
+	 *
+	 * @param string  $key Key to use when storing this variable
+	 * @param mixed   $var Variable to store
+	 * @param integer $ttl Number of seconds to store this variable for, setting
+	 *                     to 0 means it will never expire
+	 */
 	public function replace($key, $var = null, $ttl = 0)
 	{
 		return $this->_callCacheMethod('replace', func_get_args());
 	}
 
+	/**
+	 * Check if a given key exists in the cache.
+	 *
+	 * @param string $key Check for variable assigned to this key
+	 */
 	public function exists($key)
 	{
 		return $this->_callCacheMethod('exists', func_get_args());
 	}
 
+	/**
+	 * Fetch a stored variable from the cache.
+	 *
+	 * @param string $key     Fetch variable assigned to this key
+	 * @param bool   $success Referenced variable to store the result, true if
+	 *                        successful, false otherwise
+	 */
 	public function fetch($key, &$success = false)
 	{
 		return $this->_callCacheMethod('fetch', func_get_args());
 	}
 
+	/**
+	 * Atomically increment a stored number in the cache.
+	 *
+	 * @param string $key     Fetch variable assigned to this key
+	 * @param int    $step    Amount to increment by
+	 * @param bool   $success Referenced variable to store the result, true if
+	 *                        successful, false otherwise
+	 */
 	public function inc($key, $step = 1, &$success = null)
 	{
 		return $this->_callCacheMethod('inc', func_get_args());
 	}
 
+	/**
+	 * Atomically decrement a stored number in the cache.
+	 *
+	 * @param string $key     Fetch variable assigned to this key
+	 * @param int    $step    Amount to decrement by
+	 * @param bool   $success Referenced variable to store the result, true if
+	 *                        successful, false otherwise
+	 */
 	public function dec($key, $step = 1, &$success = null)
 	{
 		return $this->_callCacheMethod('dec', func_get_args());
 	}
 
+	/**
+	 * Delete an individual variable from the cache.
+	 *
+	 * @param string $key Delete variable assigned to this key
+	 */
 	public function delete($key)
 	{
 		return $this->_callCacheMethod('delete', func_get_args());
 	}
 
+	/**
+	 * Clear the entire cache.
+	 */
 	public function clear()
 	{
 		return $this->_callCacheMethod('clear', func_get_args());

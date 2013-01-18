@@ -86,7 +86,7 @@ class Instance implements CacheInterface
 	 */
 	public function add($key, $var = null, $ttl = 0)
 	{
-		return $this->_callCacheMethod('add', func_get_args());
+		return $this->callCacheMethod('add', func_get_args());
 	}
 
 	/**
@@ -100,7 +100,7 @@ class Instance implements CacheInterface
 	 */
 	public function store($key, $var = null, $ttl = 0)
 	{
-		return $this->_callCacheMethod('store', func_get_args());
+		return $this->callCacheMethod('store', func_get_args());
 	}
 
 	/**
@@ -113,7 +113,7 @@ class Instance implements CacheInterface
 	 */
 	public function replace($key, $var = null, $ttl = 0)
 	{
-		return $this->_callCacheMethod('replace', func_get_args());
+		return $this->callCacheMethod('replace', func_get_args());
 	}
 
 	/**
@@ -123,7 +123,7 @@ class Instance implements CacheInterface
 	 */
 	public function exists($key)
 	{
-		return $this->_callCacheMethod('exists', func_get_args());
+		return $this->callCacheMethod('exists', func_get_args());
 	}
 
 	/**
@@ -135,7 +135,7 @@ class Instance implements CacheInterface
 	 */
 	public function fetch($key, &$success = false)
 	{
-		return $this->_callCacheMethod('fetch', func_get_args());
+		return $this->callCacheMethod('fetch', func_get_args());
 	}
 
 	/**
@@ -148,7 +148,7 @@ class Instance implements CacheInterface
 	 */
 	public function inc($key, $step = 1, &$success = null)
 	{
-		return $this->_callCacheMethod('inc', func_get_args());
+		return $this->callCacheMethod('inc', func_get_args());
 	}
 
 	/**
@@ -161,7 +161,7 @@ class Instance implements CacheInterface
 	 */
 	public function dec($key, $step = 1, &$success = null)
 	{
-		return $this->_callCacheMethod('dec', func_get_args());
+		return $this->callCacheMethod('dec', func_get_args());
 	}
 
 	/**
@@ -171,7 +171,7 @@ class Instance implements CacheInterface
 	 */
 	public function delete($key)
 	{
-		return $this->_callCacheMethod('delete', func_get_args());
+		return $this->callCacheMethod('delete', func_get_args());
 	}
 
 	/**
@@ -179,7 +179,7 @@ class Instance implements CacheInterface
 	 */
 	public function clear()
 	{
-		return $this->_callCacheMethod('clear', func_get_args());
+		return $this->callCacheMethod('clear', func_get_args());
 	}
 
 	/**
@@ -208,7 +208,7 @@ class Instance implements CacheInterface
 	 *
 	 * @return mixed          Result of calling the method on the cache instance
 	 */
-	protected function _callCacheMethod($method, array $args = array())
+	protected function callCacheMethod($method, array $args = array())
 	{
 		if (isset($args[0])) {
 			// If we are auto prefixing all keys with a namespace, do that here

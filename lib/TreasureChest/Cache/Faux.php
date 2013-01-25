@@ -1,11 +1,11 @@
 <?php
 
-namespace TreasureChest;
+namespace TreasureChest\Cache;
 
 /**
  * Implements a simple key/value store in memory. Used for testing
  */
-class FauxCache implements CacheInterface
+class Faux implements \TreasureChest\CacheInterface
 {
 	protected $data = array();
 
@@ -20,7 +20,7 @@ class FauxCache implements CacheInterface
 
 		return $this->store($key, $var, $ttl);
 	}
-	
+
 	/**
 	 * Stores a variable in the cache, overwriting any existing variable.
 	 */
@@ -29,10 +29,10 @@ class FauxCache implements CacheInterface
 		$ttl = ($ttl === 0) ? PHP_INT_MAX : time() + $ttl;
 
 		$this->data[$key] = array($var, $ttl);
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Replaces a variable in the cache, only if it already exists.
 	 */
@@ -41,10 +41,10 @@ class FauxCache implements CacheInterface
 		if(!$this->exists($key)) {
 			return false;
 		}
-		
+
 		return $this->store($key, $var, $ttl);
 	}
-	
+
 	/**
 	 * Checks if key exists
 	 */
@@ -52,10 +52,10 @@ class FauxCache implements CacheInterface
 	{
 		return isset($this->data[$key]) && ($this->data[$key][1] > time());
 	}
-	
-	
+
+
 	/**
-	 * Fetchs a stored variable from the cache. 
+	 * Fetchs a stored variable from the cache.
 	 */
 	public function fetch($key, &$success = false)
 	{
@@ -63,13 +63,13 @@ class FauxCache implements CacheInterface
 			$success = false;
 			return false;
 		}
-		
+
 		return $this->data[$key][0];
 	}
 
 
 	/**
-	 * Atomically increments a stored number. 
+	 * Atomically increments a stored number.
 	 */
 	public function inc($key, $step = 1, &$success = null)
 	{
@@ -79,9 +79,9 @@ class FauxCache implements CacheInterface
 
 		return $this->data[$key][0];
 	}
-	
+
 	/**
-	 * Atomically decrements a stored number. 
+	 * Atomically decrements a stored number.
 	 */
 	public function dec($key, $step = 1, &$success = null)
 	{
@@ -91,7 +91,7 @@ class FauxCache implements CacheInterface
 
 		return $this->data[$key][0];
 	}
-	
+
 	/**
 	 * Deletes an individual key from the cache
 	 */
@@ -109,7 +109,7 @@ class FauxCache implements CacheInterface
 	public function clear()
 	{
 		$this->data = array();
-		
+
 		return true;
 	}
 }

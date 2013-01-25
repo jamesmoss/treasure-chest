@@ -6,8 +6,7 @@ class KeyMapperTest extends \PHPUnit_Framework_TestCase
 {
 	public function setUp()
 	{
-		require_once __DIR__.'/FauxCache.php';
-		$this->cache  = new FauxCache();
+		$this->cache  = new Cache\Faux();
 		$this->mapper = new KeyMapper($this->cache);
 	}
 

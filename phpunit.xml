@@ -2,7 +2,7 @@
 <phpunit bootstrap="vendor/autoload.php" colors="true">
 	<filter>
 		<whitelist>
-			<directory>./lib</directory>
+			<directory>./src</directory>
 			<exclude>
 				<directory>./vendor</directory>
 				<directory>./tests</directory>

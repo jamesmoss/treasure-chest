@@ -9,49 +9,57 @@ Internally, TreasureChest uses a pointer which keeps track of the version number
 ## Requirements
 
 - PHP 5.3 or higher
+- Composer
 - APC 3.1.1 or higher (if using APC as backend)
 - Memcached 1.2.0 and PECL memcached 0.1.0 or higher (if using Memcached as backend)
 
 
 ## Installation
-	
-Include and register the autoloader, this takes care of loading all other classes.
 
-	include('../lib/TreasureChest/Autoloader.php');
-	\TreasureChest\Autoloader::register();
+Use [Composer](http://getcomposer.org/) to install the `treasure-chest/treasure-chest` package. Package details [can be found on Packagist.org](https://packagist.org/packages/treasure-chest/treasure-chest).
 
+Add the following to your `composer.json` and run `composer install` (or `composer update`).
+
+    "require": {
+        "treasure-chest/treasure-chest": "0.1.*"
+    }
 
 ## Usage
 	
-Create an instance of the TreasureChest class, passing in an instance of the datastore you wish to use.
+Create an instance of the `TreasureChest\Instance` class, passing in an instance of the datastore you wish to use.
 
-	$bounty = new \TreasureChest\Instance(new \TreasureChest\Cache\APC);
+```php
+$bounty = new \TreasureChest\Instance(new \TreasureChest\Cache\APC);
+```
 
 Use the `add`, `store`, `fetch`, `replace`, `exists`, `inc`, `dec` and `delete` methods to store, retrieve and manipulate your data.
 e.g
 
-	$bounty->store('email', 'bob@example.org');
-	$bounty->store('age', 45);
-	$bounty->fetch('email'); // returns bob@example.org
-	$bounty->inc('age', 5); // returns 50
-	$bounty->dec('age', 10); // returns 40
-	$bounty->delete('email');
-	$bounty->fetch('email'); // returns boolean FALSE
-	
+```php
+$bounty->store('email', 'bob@example.org');
+$bounty->store('age', 45);
+$bounty->fetch('email'); // returns bob@example.org
+$bounty->inc('age', 5); // returns 50
+$bounty->dec('age', 10); // returns 40
+$bounty->delete('email');
+$bounty->fetch('email'); // returns boolean FALSE
+```
+
 Namespaces can be used to logically group sets of key/value pairs. Simply append the key with the desired namespace, separated by a colon (this delimiter character can be changed) 
 e.g
 
-	$bounty->add('user123:username', 'bob');
-	$bounty->add('user123:email', 'bob@example.org');
-	$bounty->add('user123:age', 21);
-	
-	// Clear the entire user123 namespace
-	$cache->invalidate('user123');
-	
-	$cache->fetch('user123:username'); // returns boolean FALSE
-	$cache->fetch('user123:email'); // returns boolean FALSE
-	$cache->fetch('user123:age'); // returns boolean FALSE
+```php
+$bounty->add('user123:username', 'bob');
+$bounty->add('user123:email', 'bob@example.org');
+$bounty->add('user123:age', 21);
 
+// Clear the entire user123 namespace
+$cache->invalidate('user123');
+
+$cache->fetch('user123:username'); // returns boolean FALSE
+$cache->fetch('user123:email'); // returns boolean FALSE
+$cache->fetch('user123:age'); // returns boolean FALSE
+```
 
 ## Known issues
 
